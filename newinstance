@@ -203,7 +203,7 @@ local function EquipBestTool()
 end
 
 local Libary = loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/Library/refs/heads/main/V5/Source.lua"))()
-local Window = Libary:MakeWindow({ "Anonymous", "by Felipe do Birigudelson", "rz-VoxSeas.json" })
+local Window = Libary:MakeWindow({ "Anonymous", "by Shadow Gostosão", "rz-VoxSeas.json" })
 local MainTab = Window:MakeTab({ "Farm", "Home" })
 
 do
