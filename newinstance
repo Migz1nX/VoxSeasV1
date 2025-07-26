@@ -213,15 +213,41 @@ local function EquipBestTool()
 	end
 end
 
+local function GetQuestByLevel()
+	local Quests = workspace.Playability.Quests:GetChildren()
+	local Level = Player:GetAttribute("Level") or 0
+	local ClosestQuest, ClosestDiff = nil, math.huge
+	for _, Quest in ipairs(Quests) do
+		local MinLevel = Quest:GetAttribute("MinLevel") or 0
+		local MaxLevel = Quest:GetAttribute("MaxLevel") or 0
+		if Level >= MinLevel and Level <= MaxLevel then
+			return Quest
+		end
+		local Diff = math.abs(Level - ((MinLevel + MaxLevel) / 2))
+		if Diff < ClosestDiff then
+			ClosestQuest = Quest
+			ClosestDiff = Diff
+		end
+	end
+	return ClosestQuest
+end
+
 local Libary = loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/Library/refs/heads/main/V5/Source.lua"))()
-local Window = Libary:MakeWindow({ "Anonymous", "by Felipe do Birigudelson", "rz-VoxSeas.json" })
+local Window = Libary:MakeWindow({ "Anonymous", "by Shadow Gostosão", "rz-VoxSeas.json" })
 local MainTab = Window:MakeTab({ "Farm", "Home" })
 
 do
 	MainTab:AddSection("Farming")
 	MainTab:AddToggle({ "Kill Closests Mobs", false, function(Value)
 		_ENV.OnFarm = Value
-		if Value then EquipBestTool() end
+		if Value then
+			EquipBestTool()
+			local Quest = GetQuestByLevel()
+			if Quest then
+				local QuestEvent = ReplicatedStorage.BetweenSides.Remotes.Events.QuestsEvent
+				QuestEvent:FireServer("Start", Quest.Name)
+			end
+		end
 		while task.wait() and _ENV.OnFarm do
 			local Enemies = GetClosestEnemies()
 			if not Enemies or #Enemies == 0 then continue end
@@ -238,7 +264,7 @@ do
 
 	MainTab:AddToggle({ "Fast Attack", false, function(Value)
 		_ENV.FastAttack = Value
-		while task.wait(0.15) and _ENV.FastAttack do
+		while task.wait(0.05) and _ENV.FastAttack do
 			local Enemies = GetClosestEnemies()
 			if Enemies and #Enemies > 0 then
 				DealDamage(Enemies)
